@@ -1,36 +1,36 @@
 import { Router } from 'express';
-import bcrypt from 'bcrypt';  // Biblioteca para hash de senhas
-import { body, validationResult } from 'express-validator';  // Para validação de dados
-
 const routes = Router();
 
 const users = [
-    { id: 1, name: 'Lucas', email: 'lucas@ig.com.br', password: '$2b$10$somehashedpassword' },  // Senha deve ser um hash
+    { id: 1, name: 'Lucas', email: 'jardellucas078@gmail.com', password: '06102000Luc@s' },
+    { id: 2, name: 'João', email: 'joao@example.com', password: 'Senha123!' },
+    { id: 3, name: 'Maria', email: 'maria@example.com', password: 'Senha456@' },
+    { id: 4, name: 'Ana', email: 'ana@example.com', password: 'Ana@7890' },
+    { id: 5, name: 'Carlos', email: 'carlos@example.com', password: 'Carlos@1234' },
+    { id: 6, name: 'Fernanda', email: 'fernanda@example.com', password: 'Fernanda@5678' },
+    { id: 7, name: 'Roberto', email: 'roberto@example.com', password: 'R0berto@999' },
+    { id: 8, name: 'Patricia', email: 'patricia@example.com', password: 'Patricia@000' },
+    { id: 9, name: 'Gabriel', email: 'gabriel@example.com', password: 'Gabriel@1115' },
+    { id: 10, name: 'Bruna', email: 'bruna@example.com', password: 'Bruna@22229' }
 ];
 
-// Middleware para validação
-const validateLogin = [
-    body('email').isEmail().withMessage('Email inválido'),
-    body('password').isLength({ min: 4 }).withMessage('Senha deve ter pelo menos 4 caracteres'),
-    body('name').notEmpty().withMessage('Nome é obrigatório'),
-];
 
-routes.post('/login', validateLogin, (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+routes.post('/login', (req, res) => {
+    const { email, password } = req.body;
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (!user) {
+        return res.status(400).json({ error: 'Usuário ou senha inválido' });
     }
 
-    const { email, password, name } = req.body;
-    
-    // Procura um usuário que tenha o mesmo email fornecido
-    const user = users.find(user => user.email === email && user.name === name);
+    return res.json({
+        message: 'Login efetuado com sucesso',
+        user: { id: user.id, name: user.name, email: user.email }
+    });
+});
 
-    if (user && bcrypt.compareSync(password, user.password)) {
-        return res.status(200).send({ message: `Email e senha válidos, bem-vindo ${name}` });
-    }
-
-    return res.status(401).send({ message: 'Email ou senha inválidos' });
+routes.get('/login', (req, res) => {
+    return res.json(users);
 });
 
 export default routes;

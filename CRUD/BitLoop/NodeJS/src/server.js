@@ -1,7 +1,22 @@
-import app from './index.js';  // Importa a instância configurada do Express
+import express from 'express';
+import cors from 'cors';
+import routes from './routes.js';
 
-const PORT = process.env.PORT || 3000;  // Define a porta em que o servidor vai rodar, usando a variável de ambiente ou 3000 como fallback
+class Server {
+    constructor() {
+        this.app = express();  // Inicializa uma instância do Express
+        this.middlewares();    // Configura os middlewares
+        this.routes();         // Define as rotas
+    }
 
-app.listen(PORT, () => {  // Inicia o servidor e faz com que ele comece a "escutar" as requisições na porta definida
-    console.log(`Server running on port ${PORT}`);  // Loga no console que o servidor está rodando
-});
+    middlewares() {
+        this.app.use(cors());          // Habilita o CORS para permitir requisições de outras origens
+        this.app.use(express.json());  // Habilita o parsing de JSON no corpo das requisições
+    }
+
+    routes() {
+        this.app.use(routes);  // Usa as rotas definidas no arquivo `routes.js`
+    }
+}
+
+export default new Server().app;  // Exporta a instância do app Express configurada
